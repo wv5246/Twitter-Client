@@ -1,6 +1,7 @@
 
 package com.codepath.apps.restclienttemplate
 
+import android.content.Intent
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,14 @@ import org.json.JSONException
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
 
@@ -37,6 +46,7 @@ class TimelineActivity : AppCompatActivity() {
             Log.i(TAG, "Refreshing timeline")
             populateHomeTimeline()
         }
+
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
             android.R.color.holo_green_light,
             android.R.color.holo_orange_light,
@@ -46,6 +56,29 @@ class TimelineActivity : AppCompatActivity() {
         rvTweets.layoutManager=LinearLayoutManager(this)
         rvTweets.adapter=adapter
         populateHomeTimeline()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId==R.id.compose){
+            val intent=Intent(this, ComposeActivity::class.java)
+            startActivityForResult(intent, REQUEST_CODE)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        // REQUEST_CODE is defined above
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE){
+            val tweet=data?.getParcelableArrayExtra("tweet") as Tweet
+            tweets.add(0, tweet)
+            adapter.notifyItemInserted(0)
+            rvTweets.smoothScrollToPosition(0)
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
     fun populateHomeTimeline(){
         client.getHomeTimeline(object:JsonHttpResponseHandler(){
@@ -79,5 +112,6 @@ class TimelineActivity : AppCompatActivity() {
     }
     companion object{
         val TAG="TimelineActivity"
+        val REQUEST_CODE=10
     }
 }
