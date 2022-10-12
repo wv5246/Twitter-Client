@@ -8,7 +8,7 @@ Time spent: **10** hours spent in total
 
 The following **required** functionality is completed:
 
-- [x] User can compse new tweet
+- [x] User can compose new tweet
 
 The following **additional** features are implemented:
 
